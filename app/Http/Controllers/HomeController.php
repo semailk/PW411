@@ -7,13 +7,8 @@ use Illuminate\View\View;
 
 class HomeController extends Controller
 {
-    public function welcome(Request $request): View
+    public function index(): View
     {
-        return view('home.welcome');
-    }
-
-    public function welcomeSave(Request $request)
-    {
-        dd($request->input());
+        return view('home');
     }
 }
