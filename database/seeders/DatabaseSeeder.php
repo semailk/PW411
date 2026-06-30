@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Actor;
+use App\Models\Genre;
+use App\Models\Movie;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,7 +19,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+         User::factory(100)->create();
 
         User::query()->updateOrCreate(
             [
@@ -28,8 +31,23 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('adminadmin'),
         ]);
 
-        $this->call([
-            GenreSeeder::class,
-        ]);
+
+        Genre::factory(100)
+            ->has(
+                Movie::factory()
+                    ->count(10)
+                ->has(
+                    Actor::factory()
+                    ->count(5),
+                    'actors'
+                )
+                , 'movies'
+            )
+            ->create();
+
+//        $this->call([
+//            GenreSeeder::class,
+//            MovieSeeder::class,
+//        ]);
     }
 }
