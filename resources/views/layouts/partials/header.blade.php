@@ -45,9 +45,6 @@
                          class="absolute right-0 mt-3 w-72 bg-gray-800/95 backdrop-blur-lg border border-gray-700/50 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden">
                         <div class="p-3 max-h-80 overflow-y-auto custom-scrollbar">
                             <div class="grid grid-cols-2 gap-2">
-                                @php
-                                    $genres = \App\Models\Genre::where('is_active', true)->get();
-                                @endphp
 
                                 @forelse($genres as $genre)
                                     <a href="{{ route('genres.show', $genre->slug) }}"
