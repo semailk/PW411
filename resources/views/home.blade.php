@@ -29,7 +29,7 @@
                     <!-- Картинка -->
                     <div class="relative">
                         @if($movie->cover)
-                            <img src="{{ $movie->cover }}"
+                            <img src="{{ $movie->cover }}" width="358px" height="538px"
                                  alt="{{ $movie->title }}"
                                  class="movie-image w-full">
                         @else

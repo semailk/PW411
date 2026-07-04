@@ -102,7 +102,8 @@
         <!-- Форма добавления комментария -->
         @auth
             <div class="bg-gray-700 rounded-lg p-4 mb-4">
-                <form action="{{ route('comments.store') }}" method="POST">
+                <form action="#" method="POST">
+{{--                <form action="{{ route('comments.store') }}" method="POST">--}}
                     @csrf
                     <input type="hidden" name="commentable_type" value="{{ get_class($movie) }}">
                     <input type="hidden" name="commentable_id" value="{{ $movie->id }}">

@@ -11,6 +11,15 @@
             <h1 class="text-2xl font-bold text-white">Добавить фильм</h1>
         </div>
 
+        @if ($errors->any())
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <form action="{{ route('admin.movies.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 

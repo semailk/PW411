@@ -3,21 +3,29 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MovieStoreRequest;
 use App\Models\Actor;
 use App\Models\Movie;
+use App\Repositories\Movie\MovieRepository;
 use Illuminate\Http\Request;
 
 class MovieController extends Controller
 {
+    public function __construct(
+        private MovieRepository $movieRepository,
+    )
+    {
+    }
+
     public function index()
     {
         // $movies type = Collection
         $movies = Movie::query()->paginate(20);
 
         return view('admin.movies.index',
-        [
-            'movies' => $movies
-        ]);
+            [
+                'movies' => $movies
+            ]);
     }
 
     public function create()
@@ -35,12 +43,11 @@ class MovieController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(MovieStoreRequest $movieStoreRequest)
     {
-        //
+        return redirect()->route('admin.movies.show',
+            $this->movieRepository->store($movieStoreRequest)
+        );
     }
 
     /**
