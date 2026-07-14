@@ -19,6 +19,7 @@ class HomeController extends Controller
         return view('home', [
             'movies' => $movies
         ]);
+
     }
 
 //    public function index(Request $request): View
