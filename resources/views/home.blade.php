@@ -8,7 +8,7 @@
         <div class="flex justify-between items-center">
             <div>
                 <h2 class="text-3xl font-bold text-white">Все фильмы</h2>
-                <p class="text-gray-400 mt-1">Найдено {{ $movies->total() }} фильмов</p>
+                <p class="text-gray-400 mt-1">Найдено {{ count($movies) }} фильмов</p>
             </div>
             <div class="flex items-center space-x-3">
                 <select class="bg-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
@@ -28,9 +28,9 @@
                 <div class="movie-card bg-gray-800 rounded-xl overflow-hidden shadow-xl">
                     <!-- Картинка -->
                     <div class="relative">
-                        @if($movie->cover)
-                            <img src="{{ $movie->cover }}" width="358px" height="538px"
-                                 alt="{{ $movie->title }}"
+                        @if($movie['cover'])
+                            <img src="{{ $movie['cover'] }}" width="358px" height="538px"
+                                 alt="{{ $movie['title'] }}"
                                  class="movie-image w-full">
                         @else
                             <div class="movie-image w-full bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center">
@@ -39,7 +39,7 @@
                         @endif
 
                         <!-- Бейдж жанра -->
-                        @if($movie->genre)
+                        @if($movie)
                             <div class="absolute top-3 left-3">
                     <span class="genre-badge text-white text-xs font-semibold px-3 py-1 rounded-full">
                         {{ $movie->genre->name }}
@@ -55,16 +55,16 @@
                                     <span>7.8</span>
                                     <span class="text-gray-400 text-xs">(1.2k)</span>
                                 </div>
-                                @if($movie->issue)
+                                @if($movie['issue'])
                                     <div class="text-sm text-gray-300">
                                         <i class="far fa-calendar-alt mr-1"></i>
-                                        {{ \Carbon\Carbon::parse($movie->issue)->format('d.m.Y') }}
+                                        {{ \Carbon\Carbon::parse($movie['issue'])->format('d.m.Y') }}
                                     </div>
                                 @endif
-                                @if($movie->time)
+                                @if($movie['time'])
                                     <div class="text-sm text-gray-300">
                                         <i class="far fa-clock mr-1"></i>
-                                        {{ $movie->time }} мин.
+                                        {{ $movie['time'] }} мин.
                                     </div>
                                 @endif
                             </div>
@@ -74,12 +74,12 @@
                     <!-- Информация о фильме -->
                     <div class="p-4 space-y-3">
                         <h3 class="font-semibold text-lg text-white truncate hover:text-purple-400 transition">
-                            <a href="#">{{ $movie->title }}</a>
+                            <a href="#">{{ $movie['title'] }}</a>
                         </h3>
 
-                        @if($movie->description)
+                        @if($movie['description'])
                             <p class="text-gray-400 text-sm line-clamp-2">
-                                {{ Str::limit($movie->description, 80) }}
+                                {{ Str::limit($movie['description'], 80) }}
                             </p>
                         @endif
 

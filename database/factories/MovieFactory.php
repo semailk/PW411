@@ -14,6 +14,7 @@ class MovieFactory extends Factory
     public function definition(): array
     {
         return [
+            'genre_id' => Genre::query()->get()->random()->id,
             'title' => $this->faker->title(),
             'description' => $this->faker->text(100),
             'start_age' => rand(6, 21) . '+',
