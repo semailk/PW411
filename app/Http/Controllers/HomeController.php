@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RegisterWelcomeMail;
 use App\Models\Movie;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class HomeController extends Controller
 {
     public function index(): View
     {
+        User::query()->get()->map(function (User $user) {
+            Mail::to($user)->queue(new RegisterWelcomeMail($user));
+        });
         $movies = Movie::query()
             ->with(['genre', 'actors'])
             ->paginate(50);
@@ -21,24 +24,4 @@ class HomeController extends Controller
         ]);
 
     }
-
-//    public function index(Request $request): View
-//    {
-//        $page = $request->page ?? 1;
-//
-//        // home.index.2
-//        if (Cache::has('home.index.' . $page)) {
-//            return view('home', [
-//                'movies' => Cache::get('home.index.' . $page),
-//            ]);
-//        }
-//        $movies = Movie::query()->with([
-//            'genre'
-//        ])->get()->toArray();
-//        Cache::put('home.index.' . $page, $movies);
-//
-//        return view('home', [
-//            'movies' => Cache::get('home.index.' . $page),
-//        ]);
-//    }
 }
