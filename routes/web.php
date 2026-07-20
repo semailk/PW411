@@ -14,7 +14,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('movies', MovieController::class);
 });
 
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

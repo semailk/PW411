@@ -18,11 +18,14 @@ class GenreFactory extends Factory
      */
     public function definition(): array
     {
-        $name = $this->faker->unique()->word();
+        $name = md5(now());
         return [
             'name' => $name,
             'slug' => Str::slug($name),
             'description' => $this->faker->text(),
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }
