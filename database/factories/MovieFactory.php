@@ -20,6 +20,7 @@ class MovieFactory extends Factory
             'start_age' => rand(6, 21) . '+',
             'issue' => $this->faker->year(),
             'time' => rand(60, 150),
+            'cover' => $this->faker->imageUrl(),
         ];
     }
 }
