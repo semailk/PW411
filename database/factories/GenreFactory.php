@@ -18,7 +18,7 @@ class GenreFactory extends Factory
      */
     public function definition(): array
     {
-        $name = md5(now());
+        $name = md5(rand(10000, 99999));
         return [
             'name' => $name,
             'slug' => Str::slug($name),

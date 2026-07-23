@@ -10,10 +10,11 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 #[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -36,10 +37,13 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role == 'admin';
     }
 
-    public function permissionOnlyAdmin()
+    public function getJWTIdentifier()
     {
-        $user = auth()->user();
+        return $this->getKey();
+    }
 
-        dd($user);
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

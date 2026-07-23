@@ -34,5 +34,12 @@ Route::prefix('genres')->name('genres.')->group(function () {
     Route::delete('{genre}', [GenreController::class, 'destroy'])->name('destroy')->middleware(IsAdminMiddleware::class);
 });
 
+Route::get('/language/{locale}', function ($locale) {
+    if (in_array($locale, ['ru', 'en'])) {
+        session(['locale' => $locale]);
+        app()->setLocale($locale);
+    }
+    return redirect()->back();
+})->name('language.switch');
 
 require __DIR__ . '/auth.php';
