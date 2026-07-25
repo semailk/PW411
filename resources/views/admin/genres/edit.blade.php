@@ -16,7 +16,8 @@
                 </a>
             </div>
 
-            <form action="{{ route('genres.update', $genre) }}" method="POST" class="space-y-6">
+
+            <form action="{{ route('genres.update', $genre->id) }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PUT')
 
@@ -74,11 +75,11 @@
                     <div class="grid grid-cols-2 gap-4 text-sm">
                         <div>
                             <span class="text-gray-500">Создан:</span>
-                            <span class="text-gray-300 ml-2">{{ $genre->created_at ? $genre->created_at->format('d.m.Y H:i') : '-' }}</span>
+                            <span class="text-gray-300 ml-2">{{ $genre->created_at ?? '-' }}</span>
                         </div>
                         <div>
                             <span class="text-gray-500">Обновлен:</span>
-                            <span class="text-gray-300 ml-2">{{ $genre->updated_at ? $genre->updated_at->format('d.m.Y H:i') : '-' }}</span>
+                            <span class="text-gray-300 ml-2">{{ $genre->updated_at ?? '-' }}</span>
                         </div>
                     </div>
                 </div>
@@ -104,7 +105,7 @@
                         <h3 class="text-sm font-medium text-gray-300">Опасная зона</h3>
                         <p class="text-xs text-gray-500">Удаление жанра необратимо</p>
                     </div>
-                    <form action="{{ route('genres.destroy', $genre) }}" method="POST"
+                    <form action="{{ route('genres.destroy', $genre->id) }}" method="POST"
                           onsubmit="return confirm('Вы уверены, что хотите удалить жанр «{{ $genre->name }}»? Это действие необратимо.')">
                         @csrf
                         @method('DELETE')

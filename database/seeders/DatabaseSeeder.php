@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
 
         $users = User::factory()->count(20)->create();
 
-        Genre::factory(10)
+        Genre::factory(5)
             ->has(
                 Movie::factory()
                     ->count(5)

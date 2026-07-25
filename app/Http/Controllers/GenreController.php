@@ -3,17 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Genre;
+use App\Models\Movie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class GenreController extends Controller
 {
     public function index()
     {
-        $genres = Genre::all();
+        if (Cache::has('genres')) {
+            $genres = Cache::get('genres');
+        }else{
+            $genres = Genre::all();
+            Cache::put('genres', $genres->toArray(), 60 * 24 * 30);
+        }
 
         return view('admin.genres.index', [
-            'genres' => $genres
+            'allGenres' => collect($genres)
         ]);
     }
 
@@ -24,44 +31,61 @@ class GenreController extends Controller
 
     public function store(Request $request)
     {
-       $genre = Genre::query()->create([
-           'name' => $request->name,
-           'description' => $request->description,
-           'slug' => Str::slug($request->name),
-            'is_active' => (boolean) $request->is_active,
+        $genre = Genre::query()->create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'slug' => Str::slug($request->name),
+            'is_active' => (boolean)$request->is_active,
         ]);
 
         return redirect()->route('genres.show', $genre->slug);
     }
 
-    public function show(string $slug)
+    public function show(Genre $genre)
     {
+        if (Cache::has('genres_' . $genre->id)) {
+            $genre = Cache::get('genres_' . $genre->id);
+        } else {
+            Cache::put('genres_' . $genre->id, $genre->toArray(), 60 * 24 * 30);
+        }
+
         return view('admin.genres.show', [
-            'genre' => Genre::query()->where('slug', $slug)->firstOrFail()
+            'genre' => (object)$genre
         ]);
     }
 
-    public function edit(string $slug)
+    public function edit(Genre $genre)
     {
         return view('admin.genres.edit', [
-            'genre' => Genre::query()->where('slug', $slug)->firstOrFail()
+            'genre' => empty(Cache::get('genres_' . $genre->id)) ?
+                $genre :
+                (object) Cache::get('genres_' . $genre->id)
         ]);
     }
 
-    public function update(Request $request, Genre $genre)
+    public function update(Genre $genre, Request $request)
     {
         $genre->update([
             'name' => $request->name,
             'description' => $request->description,
             'slug' => Str::slug($request->name),
-            'is_active' => (boolean) $request->is_active,
+            'is_active' => (boolean)$request->is_active,
         ]);
 
-        return redirect()->route('genres.show', $genre->slug);
+        return redirect()->route('genres.show', $genre->id);
     }
 
-    public function destroy(string $id)
+    public function destroy(string $slug)
     {
-        //
+        $genre = Genre::query()->where('slug', $slug)->firstOrFail();
+
+        $genre->movies->map(function (Movie $movie) {
+            $movie->actors()->detach();
+            $movie->forceDelete();
+        });
+
+        $genre->delete();
+
+        return redirect()->route('genres.index');
     }
 }

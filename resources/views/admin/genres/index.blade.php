@@ -12,7 +12,7 @@
                     <span>Все жанры</span>
                 </h1>
                 <p class="text-gray-400 mt-2 text-lg">
-                    {{ $genres->count() }} жанров для вашего идеального киновечера
+                    {{ $allGenres->count() }} жанров для вашего идеального киновечера
                 </p>
             </div>
             <div class="flex items-center space-x-3">
@@ -47,15 +47,15 @@
         <!-- Статистика жанров -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-gray-800/50 border border-gray-700/50 rounded-2xl p-4 text-center">
-                <div class="text-3xl font-bold text-yellow-400">{{ $genres->count() }}</div>
+                <div class="text-3xl font-bold text-yellow-400">{{ $allGenres->count() }}</div>
                 <div class="text-gray-400 text-sm mt-1">Всего жанров</div>
             </div>
             <div class="bg-gray-800/50 border border-gray-700/50 rounded-2xl p-4 text-center">
-                <div class="text-3xl font-bold text-blue-400">{{ $genres->where('is_active', true)->count() }}</div>
+                <div class="text-3xl font-bold text-blue-400">{{ $allGenres->where('is_active', true)->count() }}</div>
                 <div class="text-gray-400 text-sm mt-1">Активных</div>
             </div>
             <div class="bg-gray-800/50 border border-gray-700/50 rounded-2xl p-4 text-center">
-                <div class="text-3xl font-bold text-gray-400">{{ $genres->where('is_active', false)->count() }}</div>
+                <div class="text-3xl font-bold text-gray-400">{{ $allGenres->where('is_active', false)->count() }}</div>
                 <div class="text-gray-400 text-sm mt-1">Неактивных</div>
             </div>
             <div class="bg-gray-800/50 border border-gray-700/50 rounded-2xl p-4 text-center">
@@ -76,17 +76,20 @@
                 </div>
                 <div class="flex items-center space-x-2 text-sm text-gray-500">
                     <span>Найдено:</span>
-                    <span id="foundCount">{{ $genres->count() }}</span>
+                    <span id="foundCount">{{ $allGenres->count() }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Сетка жанров -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6" id="genresGrid">
-            @forelse($genres as $genre)
+            @forelse($allGenres as $genre)
+                @php
+                    $genre = (object)$genre;
+                @endphp
                 <div
                     class="genre-item group relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-800/70 to-gray-900/70 border border-gray-700/50 hover:border-yellow-500/50 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-yellow-500/10 min-h-[180px] flex flex-col">
-                    <a href="{{ route('genres.show', $genre->slug) }}" class="flex-1 p-6">
+                    <a href="{{ route('genres.show', $genre->id) }}" class="flex-1 p-6">
                         <!-- Фоновый эффект -->
                         <div
                             class="absolute inset-0 bg-gradient-to-br from-yellow-500/0 to-yellow-500/0 group-hover:from-yellow-500/10 group-hover:to-orange-500/10 transition-all duration-300"></div>

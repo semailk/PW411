@@ -38,7 +38,7 @@
                             </span>
                                 <span class="text-xs text-gray-400">
                                 <i class="far fa-calendar-alt mr-1"></i>
-                                Создан: {{ $genre->created_at ? $genre->created_at->format('d.m.Y') : '-' }}
+                                Создан: {{ $genre->created_at ?? '-' }}
                             </span>
                             </div>
                         </div>
@@ -46,11 +46,25 @@
 
                     <!-- Кнопки действий -->
                     <div class="flex items-center space-x-3">
-                        <a href="{{ route('genres.edit', $genre->slug) }}"
+                        <a href="{{ route('genres.edit', $genre->id) }}"
                            class="px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-xl hover:bg-yellow-500/30 transition-all duration-300 flex items-center space-x-2">
                             <i class="fas fa-edit"></i>
                             <span>Редактировать</span>
                         </a>
+
+                        <!-- Кнопка удаления -->
+                        <form action="{{ route('genres.destroy', $genre->id) }}"
+                              method="POST"
+                              onsubmit="return confirm('Вы уверены, что хотите удалить жанр «{{ $genre->name }}»?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    class="px-4 py-2 bg-red-500/20 text-red-400 rounded-xl hover:bg-red-500/30 transition-all duration-300 flex items-center space-x-2">
+                                <i class="fas fa-trash"></i>
+                                <span>Удалить</span>
+                            </button>
+                        </form>
+
                         <a href="{{ route('genres.index') }}"
                            class="px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-700 transition-all duration-300 flex items-center space-x-2">
                             <i class="fas fa-arrow-left"></i>
