@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Genre;
 use App\Models\Movie;
+use App\Models\Phone;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        Phone::factory()->count(100)->create();
         $users = User::factory()->count(20)->create();
 
         Genre::factory(5)
