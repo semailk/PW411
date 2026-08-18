@@ -126,6 +126,60 @@
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
+
+                <!-- Текущие изображения слайдера -->
+                @php $existingImages = $movie->getMedia('images'); @endphp
+                @if($existingImages->isNotEmpty())
+                    <div class="md:col-span-2">
+                        <label class="block text-white mb-2">
+                            <i class="fas fa-images mr-2"></i>Текущие изображения слайдера
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                            @foreach($existingImages as $media)
+                                <div class="relative group rounded-lg overflow-hidden bg-gray-700">
+                                    <img src="{{ $media->getUrl() }}" alt="Image"
+                                         class="w-full h-32 object-cover">
+                                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <a href="{{ route('admin.movies.destroy-image', ['movie' => $movie, 'media' => $media->id]) }}"
+                                           onclick="return confirm('Удалить это изображение?')"
+                                           class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                    <div class="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
+                                        <p class="text-white text-xs truncate">{{ $media->name }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Добавить новые изображения -->
+                <div class="md:col-span-2">
+                    <label class="block text-white mb-2">
+                        <i class="fas fa-plus-circle mr-2"></i>Добавить изображения
+                    </label>
+                    <div id="drop-zone"
+                         class="relative border-2 border-dashed border-gray-600 rounded-xl p-8 text-center hover:border-blue-500 transition-all cursor-pointer bg-gray-700/30">
+                        <input type="file" name="images[]" id="images-input" multiple accept="image/*"
+                               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <div class="space-y-2">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-blue-400"></i>
+                            <p class="text-gray-300">Перетащите изображения сюда или <span class="text-blue-400 font-medium">нажмите для выбора</span></p>
+                            <p class="text-gray-500 text-sm">JPG, PNG, BMP — макс. 4 МБ каждое. До 10 файлов.</p>
+                        </div>
+                    </div>
+                    @error('images')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                    @error('images.*')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+
+                    <!-- Превью выбранных изображений -->
+                    <div id="images-preview" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4"></div>
+                </div>
             </div>
 
             <div class="mt-6 flex space-x-4">
@@ -139,4 +193,59 @@
             </div>
         </form>
     </div>
+
+    @push('scripts')
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const input = document.getElementById('images-input');
+        const preview = document.getElementById('images-preview');
+
+        ['dragenter', 'dragover'].forEach(evt => {
+            dropZone.addEventListener(evt, e => {
+                e.preventDefault();
+                dropZone.classList.add('border-blue-500', 'bg-blue-500/10');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(evt => {
+            dropZone.addEventListener(evt, e => {
+                e.preventDefault();
+                dropZone.classList.remove('border-blue-500', 'bg-blue-500/10');
+            });
+        });
+
+        dropZone.addEventListener('drop', e => {
+            const files = e.dataTransfer.files;
+            input.files = files;
+            handleFiles(files);
+        });
+
+        input.addEventListener('change', () => {
+            handleFiles(input.files);
+        });
+
+        function handleFiles(files) {
+            preview.innerHTML = '';
+            [...files].forEach(file => {
+                if (!file.type.startsWith('image/')) return;
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const div = document.createElement('div');
+                    div.className = 'relative group rounded-lg overflow-hidden bg-gray-700';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" class="w-full h-32 object-cover" alt="Preview">
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <i class="fas fa-check text-green-400 text-xl"></i>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
+                            <p class="text-white text-xs truncate">${file.name}</p>
+                        </div>
+                    `;
+                    preview.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+    @endpush
 @endsection

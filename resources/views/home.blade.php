@@ -74,7 +74,7 @@
                     <!-- Информация о фильме -->
                     <div class="p-4 space-y-3">
                         <h3 class="font-semibold text-lg text-white truncate hover:text-purple-400 transition">
-                            <a href="#">{{ $movie['title'] }}</a>
+                            <a href="{{ route('movie.show', $movie) }}">{{ $movie['title'] }}</a>
                         </h3>
 
                         @if($movie['description'])
@@ -102,7 +102,7 @@
                             <button class="text-sm text-purple-400 hover:text-purple-300 transition">
                                 <i class="far fa-heart mr-1"></i>В избранное
                             </button>
-                            <a href="#" class="text-sm bg-purple-600 hover:bg-purple-700 text-white px-4 py-1 rounded-full transition">
+                            <a href="{{ route('movie.show', $movie) }}" class="text-sm bg-purple-600 hover:bg-purple-700 text-white px-4 py-1 rounded-full transition">
                                 Подробнее
                             </a>
                         </div>

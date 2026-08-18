@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MovieStoreRequest;
+use App\Http\Requests\MovieUpdateRequest;
 use App\Models\Actor;
 use App\Models\Movie;
 use App\Repositories\Movie\MovieRepository;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class MovieController extends Controller
 {
@@ -19,13 +21,11 @@ class MovieController extends Controller
 
     public function index()
     {
-        // $movies type = Collection
         $movies = Movie::query()->paginate(20);
 
-        return view('admin.movies.index',
-            [
-                'movies' => $movies
-            ]);
+        return view('admin.movies.index', [
+            'movies' => $movies
+        ]);
     }
 
     public function create()
@@ -38,8 +38,11 @@ class MovieController extends Controller
                 'surname'
             ])->get();
 
+        $genres = \App\Models\Genre::all();
+
         return view('admin.movies.create', [
-            'actors' => $actors
+            'actors' => $actors,
+            'genres' => $genres,
         ]);
     }
 
@@ -50,11 +53,10 @@ class MovieController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Movie $movie)
     {
+        $movie->loadMedia('images');
+
         return view('admin.movies.show', [
             'movie' => $movie
         ]);
@@ -63,20 +65,37 @@ class MovieController extends Controller
     public function edit(Movie $movie)
     {
         $actors = Actor::query()->get();
+        $genres = \App\Models\Genre::all();
 
         return view('admin.movies.edit', [
             'movie' => $movie,
-            'actors' => $actors
+            'actors' => $actors,
+            'genres' => $genres,
         ]);
     }
 
-    public function update(Request $request, string $id)
+    public function update(MovieUpdateRequest $request, Movie $movie)
     {
-        //
+        $this->movieRepository->update($request, $movie);
+
+        return redirect()->route('admin.movies.show', $movie);
     }
 
-    public function destroy(string $id)
+    public function destroy(Movie $movie)
     {
-        //
+        $this->movieRepository->destroy($movie);
+
+        return redirect()->route('admin.movies.index');
+    }
+
+    /**
+     * Удаление одного изображения из медиа-коллекции.
+     */
+    public function destroyImage(Movie $movie, $media): RedirectResponse
+    {
+        $movie->clearMediaCollectionItem('images', $media);
+
+        return redirect()->route('admin.movies.edit', $movie)
+            ->with('success', 'Изображение удалено');
     }
 }

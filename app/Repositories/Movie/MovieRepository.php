@@ -3,15 +3,16 @@
 namespace App\Repositories\Movie;
 
 use App\Http\Requests\MovieStoreRequest;
-use App\Http\Requests\MovieUpdateRequest;
 use App\Http\Resources\MovieResource;
 use App\Models\Movie;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class MovieRepository implements MovieRepositoryInterface
 {
     private const PER_PAGE = 10;
+
     public function store(MovieStoreRequest $movieStoreRequest): Movie
     {
         $validated = $movieStoreRequest->validated();
@@ -32,6 +33,13 @@ class MovieRepository implements MovieRepositoryInterface
         ]);
 
         $newMovie->actors()->attach($validated['actors']);
+
+        // Загрузка изображений через MediaLibrary
+        if ($movieStoreRequest->hasFile('images')) {
+            foreach ($movieStoreRequest->file('images') as $image) {
+                $newMovie->addMedia($image)->toMediaCollection('images');
+            }
+        }
 
         return $newMovie->load([
             'genre:id,name',
@@ -57,13 +65,43 @@ class MovieRepository implements MovieRepositoryInterface
         ]);
     }
 
-    public function update(MovieUpdateRequest $movieUpdateRequest, Movie $movie): Movie
+    public function update(Request $request, Movie $movie): Movie
     {
-        // TODO: Implement update() method.
+        $validated = $request->validated();
+
+        if ($request->hasFile('cover')) {
+            $coverPath = 'storage/' . $request->file('cover')->store('cover', 'public');
+            $validated['cover'] = $coverPath;
+        }
+
+        $movie->update($validated);
+
+        // Синхронизация актёров
+        if (isset($validated['actors'])) {
+            $movie->actors()->sync($validated['actors']);
+        }
+
+        // Добавление новых изображений через MediaLibrary
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $movie->addMedia($image)->toMediaCollection('images');
+            }
+        }
+
+        return $movie->load([
+            'genre:id,name',
+            'actors:id,first_name,last_name,surname,photo'
+        ]);
     }
 
     public function destroy(Movie $movie): JsonResponse
     {
-        // TODO: Implement destroy() method.
+        $movie->clearMediaCollection('images');
+        $movie->actors()->detach();
+        $movie->delete();
+
+        return response()->json([
+            'message' => 'Фильм успешно удалён'
+        ]);
     }
 }

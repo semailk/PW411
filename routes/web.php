@@ -8,10 +8,12 @@ use App\Http\Middleware\IsAdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/movie/{movie}', [HomeController::class, 'show'])->name('movie.show');
 
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('movies', MovieController::class);
+    Route::delete('movies/{movie}/media/{media}', [MovieController::class, 'destroyImage'])->name('movies.destroy-image');
 });
 
 Route::get('/dashboard', function () {
