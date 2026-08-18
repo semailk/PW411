@@ -22,7 +22,9 @@ class MovieUpdateRequest extends FormRequest
             'issue' => 'required|integer|between:1900,2050',
             'actors' => 'required|array',
             'actors.*' => 'integer|exists:actors,id',
-            'cover' => ['mimes:jpg,bmp,png,jpeg', 'max:4096']
+            'cover' => ['nullable', 'mimes:jpg,bmp,png,jpeg', 'max:4096'],
+            'images' => ['nullable', 'array', 'max:10'],
+            'images.*' => ['image', 'mimes:jpg,bmp,png,jpeg', 'max:4096'],
         ];
     }
 
@@ -65,6 +67,13 @@ class MovieUpdateRequest extends FormRequest
             // Cover
             'cover.mimes' => 'Обложка должна быть в одном из форматов: JPG, BMP, PNG или JPEG.',
             'cover.max' => 'Размер обложки не должен превышать 4 МБ.',
+
+            // Images
+            'images.array' => 'Изображения должны быть массивом.',
+            'images.max' => 'Максимальное количество изображений — 10.',
+            'images.*.image' => 'Каждый файл должен быть изображением.',
+            'images.*.mimes' => 'Изображения должны быть в формате: JPG, BMP, PNG или JPEG.',
+            'images.*.max' => 'Размер каждого изображения не должен превышать 4 МБ.',
         ];
     }
 }
